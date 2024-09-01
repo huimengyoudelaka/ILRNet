@@ -1,6 +1,6 @@
 # Iterative Low-rank  Network for Hyperspectral Image Denoising
 
-Jin Ye, Fengchao Xiong, Jun Zhou, and Yuntao Qian, ["Iterative Low-rank  Network for Hyperspectral Image Denoising"]("https://ieeexplore.ieee.org/document/10645292") TGRS 2024 
+Jin Ye, Fengchao Xiong, Jun Zhou, and Yuntao Qian, ["Iterative Low-rank  Network for Hyperspectral Image Denoising"](https://ieeexplore.ieee.org/document/10645292) TGRS 2024 
 
 
 <hr />
@@ -16,13 +16,13 @@ Jin Ye, Fengchao Xiong, Jun Zhou, and Yuntao Qian, ["Iterative Low-rank  Network
 
 ## Models
 
-We provide the [checkpoints]("https://drive.google.com/drive/folders/1KN1Ggi0WkMiTIlSj67dTAFktPAvPPWHf?usp=drive_link") of ILRNet.
+We provide the [checkpoints](https://drive.google.com/drive/folders/1KN1Ggi0WkMiTIlSj67dTAFktPAvPPWHf?usp=drive_link) of ILRNet.
 ### Quantitative Comparison on ICVL Dataset
 | Method  | [0-15]| [0-55]  | [0-95] | mix |  Corr |
 | :------ | :--------: | :--------: | :--------: | :--------: | :----------------------------------------------------------: | 
 | [T3SC](https://www.mdpi.com/2072-4292/14/18/4598) | 49.68 | 45.15 | 43.10 | 34.09 | 47.33 |
 | [MACNet](https://ieeexplore.ieee.org/document/9631264)  | 48.21 | 43.74 | 41.24 | 28.44 | 45.60 |
-| [TRQ3D]()  | 46.43 | 44.64 | 43.54 | **39.73** | 46.26 |
+| [TRQ3D](https://www.mdpi.com/2072-4292/14/18/4598)  | 46.43 | 44.64 | 43.54 | **39.73** | 46.26 |
 | [SST](http://arxiv.org/abs/2211.14090)  | 50.87 | 46.39 | 44.83 | 39.22 | 47.59 |
 | [DPNet-S](https://ieeexplore.ieee.org/abstract/document/10258356) | 50.24 | 44.82 | 42.95 | 38.61 | 45.51 |
 | [ILRNet](https://ieeexplore.ieee.org/document/10645292)  | **51.22** | **46.88** | **45.46** | 39.06 | **47.80** |
@@ -31,12 +31,12 @@ We provide the [checkpoints]("https://drive.google.com/drive/folders/1KN1Ggi0WkM
 ### Quantitative Comparison on Pavia City Center HSI
 | Method  | [0-15]| [0-55]  | [0-95] | mix |  Corr |
 | :------ | :--------: | :--------: | :--------: | :--------: | :----------------------------------------------------------: | 
-| [T3SC](https://www.mdpi.com/2072-4292/14/18/4598) | 49.68 | 45.15 | 43.10 | 34.09 | 47.33 |
-| [MACNet](https://ieeexplore.ieee.org/document/9631264)  | 48.21 | 43.74 | 41.24 | 28.44 | 45.60 |
-| [TRQ3D]()  | 46.43 | 44.64 | 43.54 | **39.73** | 46.26 |
-| [SST](http://arxiv.org/abs/2211.14090)  | 50.87 | 46.39 | 44.83 | 39.22 | 47.59 |
-| [DPNet-S](https://ieeexplore.ieee.org/abstract/document/10258356) | 50.24 | 44.82 | 42.95 | 38.61 | 45.51 |
-| [ILRNet](https://ieeexplore.ieee.org/document/10645292)  | **51.22** | **46.88** | **45.46** | 39.06 | **47.80** |
+| [T3SC](https://www.mdpi.com/2072-4292/14/18/4598) | 41.15 | 36.05 | 34.67 | 28.66 | 38.75 |
+| [MACNet](https://ieeexplore.ieee.org/document/9631264)  | 47.25 | 40.88 | 36.63 | 27.73 | 37.41 |
+| [TRQ3D](https://www.mdpi.com/2072-4292/14/18/4598)  | 34.64 | 33.36 | 32.62 | 28.23 | 34.33 |
+| [SST](http://arxiv.org/abs/2211.14090)  | 44.30 | 37.09 | 36.25 | 31.86 | 36.84 |
+| [DPNet-S](https://ieeexplore.ieee.org/abstract/document/10258356) | 45.76 | 39.37 | 39.28 | 34.60 | 39.14 |
+| [ILRNet](https://ieeexplore.ieee.org/document/10645292)  | **47.45** | **41.52** | **41.80** | **36.17** | **41.41** |
 
 
 ## Citations
