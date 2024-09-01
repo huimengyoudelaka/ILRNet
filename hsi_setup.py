@@ -282,45 +282,12 @@ class Engine(object):
                 loss_data += loss.item()
             outputs, res = torch.cat(O, dim=1)
         else:
-            # outputs, res = self.net(inputs)
-            # outputs = self.net(inputs)
-            # outputs,lamdas = self.net(inputs)
-            # outputs,lamdas1, lamdas2, f_, temp_X_ = self.net(inputs)
-            # outputs, lamdas2 = self.net(inputs)
-            # with torch.autograd.profiler.profile(enabled=True, use_cuda=True, record_shapes=False, profile_memory=False) as prof:
-            # torch.cuda.synchronize()
-            # start = time.time()
             outputs = self.net(inputs)
-            # torch.cuda.synchronize()
-            # end = time.time()
-            # cost_time = end-start
-            # print(prof.table())
-            # outputs,lamdas1, lamdas2= self.net(inputs)
-            # outputs,lamdas1, lamdas2, f_, temp_X_ = self.net(inputs)
-            # outputs, lamdas1 = self.net(inputs)
-
-            # outputs = torch.clamp(self.net(inputs), 0, 1)
-            # loss = self.criterion(outputs, targets)
-            
-            # if outputs.ndimension() == 5:
-            #     loss = self.criterion(outputs[:,0,...], torch.clamp(targets[:,0,...], 0, 1))
-            # else:
-            #     loss = self.criterion(outputs, torch.clamp(targets, 0, 1))
-            # print(len(outputs))
             for index,output in enumerate(outputs):
                 loss = self.criterion(output, targets)
                 if(index<(len(outputs)-1)):
                     loss = loss*0.5
                 loss_data += loss
-            # loss_data = loss_data/len(outputs)
-
-
-            # loss = 0
-
-            # for output in outputs:
-            #     loss += self.criterion(output, targets)
-            
-            # loss /=  len(output)
             
             if train:
                 # loss.backward()
@@ -329,14 +296,7 @@ class Engine(object):
         if train:
             total_norm = nn.utils.clip_grad_norm_(self.net.parameters(), self.opt.clip)
             self.optimizer.step()
-        # return outputs, loss_data, total_norm,lamdas
-        # return outputs, loss_data, total_norm, lamdas1, lamdas2, f_, temp_X_
-        # return outputs[-1], loss_data, total_norm, lamdas2
-        # return outputs[-1], loss_data, total_norm, lamdas1
-        # return outputs[-1], loss_data, total_norm
-        # return outputs, loss_data, total_norm, lamdas1, lamdas2
         return outputs, loss_data, total_norm
-        # return outputs,res, loss_data, total_norm
 
     def load(self, resumePath=None, load_opt=True):
         model_best_path = join(self.basedir, self.prefix, 'model_latest.pth')
@@ -397,66 +357,6 @@ class Engine(object):
             self.writer.add_scalar(
                 join(self.prefix, 'train_loss_epoch'), avg_loss, self.epoch)
 
-    # def validate(self, valid_loader, name,block,batch_size):
-    #     self.net.eval()
-    #     validate_loss = 0
-    #     total_psnr = 0
-    #     total_ssim=0
-    #     total_sam=0
-    #     print('\n[i] Eval dataset {}...'.format(name))
-    #     #print(torch.cuda.device_count())
-    #     #torch.cuda.empty_cache()
-    #     res_arr = np.zeros((len(valid_loader), 3))
-    #
-    #
-    #     with torch.no_grad():
-    #         with torch.cuda.device(self.opt.gpu_ids[0]):
-    #             for batch_idx,(inputs,fname) in enumerate(tqdm(valid_loader,disable=True)):
-    #                 fname=fname[0]
-    #                 print(fname)
-    #                 targets=dataloaders_hsi_test.get_gt(self.opt.gtroot,fname)
-    #                 # inputs=inputs
-    #                 if not self.opt.no_cuda:
-    #                     self.device = 'cuda:' + str(self.opt.gpu_ids[0]) if not self.opt.no_cuda else 'cpu'
-    #                     inputs, targets = inputs.to(self.device), targets.to(self.device)
-    #                     # print(inputs.shape)
-    #                 batch_noisy_blocks = block._make_blocks(inputs)
-    #                 patch_loader = torch.utils.data.DataLoader(batch_noisy_blocks, batch_size=batch_size,
-    #                                                            drop_last=False)
-    #                 batch_out_blocks = torch.zeros_like(batch_noisy_blocks)
-    #                 for i, inp in enumerate(patch_loader):  # if it doesnt fit in memory
-    #                     id_from, id_to = i * patch_loader.batch_size, (i + 1) * patch_loader.batch_size
-    #                     batch_out_blocks[id_from:id_to] =self.net(inp)
-    #                 outputs = block._agregate_blocks(batch_out_blocks)
-    #                 # print(outputs.shape)
-    #                 #scio.savemat(fname+'Res.mat', {'avg': outputs.cpu().detach().numpy()})
-    #                 targets = targets.unsqueeze(0).unsqueeze(0)
-    #                 # print(targets.shape)
-    #                 psnr = np.mean(cal_bwpsnr(outputs, targets))
-    #                 # ssim = np.mean(cal_bwssim(outputs, targets))
-    #                 # sam = cal_sam(outputs, targets)
-    #                 #print(outputs.shape)
-    #                 res_arr[batch_idx, :] = MSIQA(outputs, targets)
-    #                 avg_loss = validate_loss / (batch_idx+1)
-    #                 # total_ssim +=ssim
-    #                 # total_sam  +=sam
-    #                 total_psnr += psnr
-    #                 avg_psnr = total_psnr / (batch_idx+1)
-    #                 # avg_ssim =total_ssim/(batch_idx+1)
-    #                 avg_sam= total_sam/(batch_idx+1)
- 	# 				# progress_bar(batch_idx, len(valid_loader), 'Loss: %.4e | PSNR: %.4f | SSIM: %.4f |SAM: %.4f'
-    #   #                           % (avg_loss, avg_psnr, avg_ssim, avg_sam))
-    #                 progress_bar(batch_idx, len(valid_loader), '| PSNR: %.4f'
-    #                             % (avg_psnr))
-    #                # if batch_idx == 10:###modified###
-    #                 #    break###modified###
-    #     if not self.opt.no_log:
-    #         self.writer.add_scalar(
-    #             join(self.prefix, name, 'val_loss_epoch'), avg_loss, self.epoch)
-    #         self.writer.add_scalar(
-    #             join(self.prefix, name, 'val_psnr_epoch'), avg_psnr, self.epoch)
-    #
-    #     return avg_psnr, avg_loss,res_arr
 
     def validate(self, valid_loader, name):
         self.net.eval()
@@ -464,10 +364,6 @@ class Engine(object):
         total_psnr = 0
         total_ssim = 0
         total_sam = 0
-        # total_time = 0
-        # total_lamdas = torch.zeros(5,31)
-        total_lamdas1 = torch.zeros(7,31)
-        total_lamdas2 = torch.zeros(7,31)
         print('\n[i] Eval dataset {}...'.format(name))
         # print(torch.cuda.device_count())
         torch.cuda.empty_cache()
@@ -477,7 +373,6 @@ class Engine(object):
             with torch.cuda.device(self.opt.gpu_ids[0]):
                 for batch_idx, (inputs, fname) in enumerate(tqdm(valid_loader, disable=True)):
                     fname = fname[0]
-                    # filenames.append(fname)
                     targets = dataloaders_hsi_test.get_gt(self.opt.gtroot, fname)
                     inputs = inputs.unsqueeze(0)
                     targets = targets.unsqueeze(0).unsqueeze(0)
@@ -485,62 +380,16 @@ class Engine(object):
                     if not self.opt.no_cuda:
                         self.device = 'cuda:' + str(self.opt.gpu_ids[0]) if not self.opt.no_cuda else 'cpu'
                         inputs, targets = inputs.to(self.device), targets.to(self.device)
-                        ###modified###
-                    # print('input_psnr:',np.mean(cal_bwpsnr(inputs, targets)))
-                    # print(np.mean(cal_bwpsnr(inputs, targets)))
-                    # outputs,res, loss_data, _ = self.__step(False, inputs, targets)
-                    # outputs, loss_data, _, lamdas = self.__step(False, inputs, targets)
-                    # outputs, loss_data, _, lamdas1, lamdas2, f_, temp_X_ = self.__step(False, inputs, targets)
-                    # outputs, loss_data, _, lamdas2 = self.__step(False, inputs, targets)
-                    # outputs, loss_data, _, lamdas1 = self.__step(False, inputs, targets)
-                    # outputs, loss_data, _, lamdas1, lamdas2 = self.__step(False, inputs, targets)
-                    # print(inputs.shape)
-                    # U, S, V = torch.svd(inputs,some=True,compute_uv=True)
-                    # torch.save(self.S.cpu(), "/data_3/yejin/experiment_mat/irdnet_remake/lr_visual/pre_img_S.pt")
-                    # break
                     outputs, loss_data, _ = self.__step(False, inputs, targets)
-                    # total_time = total_time + cost_time
                     psnr = np.mean(cal_bwpsnr(outputs[-1], targets))
-                    # psnr = np.mean(cal_bwpsnr(outputs, targets))
-                    # ssim = np.mean(cal_bwssim(outputs, targets))
-                    # sam = cal_sam(outputs, targets)
-                    # print(outputs.shape)
-                    # scio.savemat(fname+'Res.mat', {'res1': res[0].cpu().detach().numpy(),'res2': res[1].cpu().detach().numpy(),'res3': res[2].cpu().detach().numpy(),'res4': res[3].cpu().detach().numpy(),'res5': res[4].cpu().detach().numpy()})
-                    # scio.savemat(fname+'Res.mat', {'output': outputs[0].cpu().detach().numpy()})
-                    # scio.savemat('/mnt/data_3/yejin/project/IRDNet18/wavelet_ablution_show/with/_'+str(psnr)+'_'+fname, {'ilrnet': outputs[-1].cpu().detach().numpy()})
-                    # if fname == "ulm_0328-1118.mat":
-                    # print(fname)
-                    scio.savemat('/mnt/data_3/yejin/experiment_mat/irdnet_remake/lr_visual/'+fname, {'ilrnet': outputs[-1].cpu().detach().numpy()})
-                    # for i,output in enumerate(outputs):
-                    #    mid_psnr = np.mean(cal_bwpsnr(output, targets))
-                    #    print(i,":",mid_psnr)
-                    #    scio.savemat('/data_3/yejin/experiment_mat/irdnet_unfolding7/ICVL/mix/temp/'+fname+'_ref'+str(i)+'_Res.mat', {'ilrnet': output.cpu().detach().numpy()})
-                    # print('f_')
-                    # for i,output in enumerate(f_):
-                    #     mid_psnr = np.mean(cal_bwpsnr(f_[i], targets))
-                    #     print(i,":",mid_psnr)
-                    #     scio.savemat('./res_mat_f/'+fname+'_ref'+str(i)+'_f_Res.mat', {'output': f_[i].cpu().detach().numpy(),'psnr':mid_psnr})
-                    # print('temp_X_')
-                    # for i,output in enumerate(temp_X_):
-                    #     mid_psnr = np.mean(cal_bwpsnr(temp_X_[i], targets))
-                    #     print(i,":",mid_psnr)
-                    #     scio.savemat('./res_mat_temp_X/'+fname+'_ref'+str(i)+'_temp_X_Res.mat', {'output': temp_X_[i].cpu().detach().numpy(),'psnr':mid_psnr})
                     res_arr[batch_idx, :] = MSIQA(outputs[-1], targets)
-                    # total_lamdas += lamdas
-                    # total_lamdas1 += lamdas1
-                    # total_lamdas2 += lamdas2
                     validate_loss += loss_data
                     avg_loss = validate_loss / (batch_idx + 1)
-                    # total_ssim +=ssim
-                    # total_sam  +=sam
                     total_psnr += psnr
                     avg_psnr = total_psnr / (batch_idx + 1)
-                    # avg_ssim =total_ssim/(batch_idx+1)
                     avg_sam = total_sam / (batch_idx + 1)
                     # avg_time = total_time/(batch_idx + 1)
                     # avg_lamdas = total_lamdas/(batch_idx + 1)
-                    avg_lamdas1 = total_lamdas1/(batch_idx + 1)
-                    avg_lamdas2 = total_lamdas2/(batch_idx + 1)
                     # progress_bar(batch_idx, len(valid_loader), 'Loss: %.4e | PSNR: %.4f | SSIM: %.4f |SAM: %.4f'
                     #                           % (avg_loss, avg_psnr, avg_ssim, avg_sam))
                     progress_bar(batch_idx, len(valid_loader), 'Loss: %.4e | PSNR: %.4f'
@@ -552,25 +401,14 @@ class Engine(object):
                 join(self.prefix, name, 'val_loss_epoch'), avg_loss, self.epoch)
             self.writer.add_scalar(
                 join(self.prefix, name, 'val_psnr_epoch'), avg_psnr, self.epoch)
-
-        # np.savetxt("avglamdas.csv",avg_lamdas.numpy()) 
-        # np.savetxt("avglamdas1.csv",avg_lamdas1.numpy()) 
-        # np.savetxt("avglamdas2.csv",avg_lamdas2.numpy()) 
-        # with open('filenames1.txt', 'w', encoding='utf-8') as file:
-        #     for item in filenames:
-        #         file.write(item + '\n')  
-        # print(avg_time)
         return avg_psnr, avg_loss, res_arr
 
-    def validate_y(self, valid_loader, name):
+    def validate_patch(self, valid_loader, name):
         self.net.eval()
         validate_loss = 0
         total_psnr = 0
         total_ssim = 0
         total_sam = 0
-        # total_lamdas = torch.zeros(5,31)
-        total_lamdas1 = torch.zeros(5,31)
-        total_lamdas2 = torch.zeros(5,31)
         print('\n[i] Eval dataset {}...'.format(name))
         # print(torch.cuda.device_count())
         torch.cuda.empty_cache()
@@ -590,64 +428,17 @@ class Engine(object):
                     if not self.opt.no_cuda:
                         self.device = 'cuda:' + str(self.opt.gpu_ids[0]) if not self.opt.no_cuda else 'cpu'
                         inputs, targets = inputs.to(self.device), targets.to(self.device)
-                        ###modified###
-                    # print('input_psnr:',np.mean(cal_bwpsnr(inputs, targets)))
-                    # print(np.mean(cal_bwpsnr(inputs, targets)))
-                    # outputs,res, loss_data, _ = self.__step(False, inputs, targets)
-                    # outputs, loss_data, _, lamdas = self.__step(False, inputs, targets)
-                    # outputs, loss_data, _, lamdas1, lamdas2, f_, temp_X_ = self.__step(False, inputs, targets)
-                    # outputs, loss_data, _, lamdas2 = self.__step(False, inputs, targets)
-                    # outputs, loss_data, _, lamdas1 = self.__step(False, inputs, targets)
-                    # outputs, loss_data, _, lamdas1, lamdas2 = self.__step(False, inputs, targets)
                     outputs, loss_data, _ = self.__step(False, inputs, inputs)
-                    # for i in range(inputs.shape[0]):
-                    #     scio.savemat('/data_3/yejin/experiment_mat/irdnet/China/noniid95/intput_'+fname+str(i)+'Res.mat', {'output': inputs[i].cpu().detach().numpy()})
-                    # outputs, loss_data, _ = self.__step(False, inputs, inputs)
-                    # for i in range(outputs[-1].shape[0]):
-                    #     scio.savemat('/data_3/yejin/experiment_mat/irdnet/China/noniid95/'+fname+str(i)+'Res.mat', {'output': outputs[-1][i].cpu().detach().numpy()})
                     outputs = refold(outputs[-1],data_shape=data_shape, kernel_size=kernel_size,stride=stride,device=self.device).unsqueeze(0).unsqueeze(0)
 
                     psnr = np.mean(cal_bwpsnr(outputs, targets))
-                    # psnr = np.mean(cal_bwpsnr(outputs[-1], targets))
-                    # psnr = np.mean(cal_bwpsnr(outputs, targets))
-                    # ssim = np.mean(cal_bwssim(outputs, targets))
-                    # sam = cal_sam(outputs, targets)
-                    # print(outputs.shape)
-                    # scio.savemat(fname+'Res.mat', {'res1': res[0].cpu().detach().numpy(),'res2': res[1].cpu().detach().numpy(),'res3': res[2].cpu().detach().numpy(),'res4': res[3].cpu().detach().numpy(),'res5': res[4].cpu().detach().numpy()})
-                    # scio.savemat(fname+'Res.mat', {'output': outputs[0].cpu().detach().numpy()})
-                    # scio.savemat('/data_3/yejin/experiment_mat/irdnet_unfolding7/china/mix/'+fname, {'ilrnet': outputs.cpu().detach().numpy()})
-                    # if fname == "ulm_0328-1118.mat":
-                    # print(fname)
-                    # scio.savemat('/data_3/yejin/experiment_mat/irdnet/wdc/95/'+fname+'.mat', {'output': outputs[-1].cpu().detach().numpy()})
-                    # for i,output in enumerate(outputs):
-                    #    mid_psnr = np.mean(cal_bwpsnr(outputs[i], targets))
-                    #    print(i,":",mid_psnr)
-                    #    scio.savemat('./res_mat/'+fname+'_ref'+str(i)+'_Res.mat', {'output': outputs[i].cpu().detach().numpy()})
-                    # print('f_')
-                    # for i,output in enumerate(f_):
-                    #     mid_psnr = np.mean(cal_bwpsnr(f_[i], targets))
-                    #     print(i,":",mid_psnr)
-                    #     scio.savemat('./res_mat_f/'+fname+'_ref'+str(i)+'_f_Res.mat', {'output': f_[i].cpu().detach().numpy(),'psnr':mid_psnr})
-                    # print('temp_X_')
-                    # for i,output in enumerate(temp_X_):
-                    #     mid_psnr = np.mean(cal_bwpsnr(temp_X_[i], targets))
-                    #     print(i,":",mid_psnr)
-                    #     scio.savemat('./res_mat_temp_X/'+fname+'_ref'+str(i)+'_temp_X_Res.mat', {'output': temp_X_[i].cpu().detach().numpy(),'psnr':mid_psnr})
                     res_arr[batch_idx, :] = MSIQA(outputs[-1], targets)
-                    # total_lamdas += lamdas
-                    # total_lamdas1 += lamdas1
-                    # total_lamdas2 += lamdas2
                     validate_loss += loss_data
                     avg_loss = validate_loss / (batch_idx + 1)
-                    # total_ssim +=ssim
-                    # total_sam  +=sam
                     total_psnr += psnr
                     avg_psnr = total_psnr / (batch_idx + 1)
                     # avg_ssim =total_ssim/(batch_idx+1)
                     avg_sam = total_sam / (batch_idx + 1)
-                    # avg_lamdas = total_lamdas/(batch_idx + 1)
-                    avg_lamdas1 = total_lamdas1/(batch_idx + 1)
-                    avg_lamdas2 = total_lamdas2/(batch_idx + 1)
                     # progress_bar(batch_idx, len(valid_loader), 'Loss: %.4e | PSNR: %.4f | SSIM: %.4f |SAM: %.4f'
                     #                           % (avg_loss, avg_psnr, avg_ssim, avg_sam))
                     progress_bar(batch_idx, len(valid_loader), 'Loss: %.4e | PSNR: %.4f'
@@ -739,84 +530,6 @@ class Engine(object):
                         
         return res_arr, input_arr
 
-    # def test_real(self, test_loader, savedir=None):
-    #     self.net.eval()
-    #     # print(torch.cuda.device_count())
-    #     torch.cuda.empty_cache()
-    #     with torch.no_grad():
-    #         with torch.cuda.device(self.opt.gpu_ids[0]):
-    #             for batch_idx, (inputs, fname) in enumerate(tqdm(test_loader, disable=True)):
-    #                 fname = fname[0]
-    #                 print('\n[i] Eval dataset {}...'.format(fname))
-    #                 inputs = inputs.unsqueeze(0)
-    #                 inputs = inputs[:, :, :, :, :]
-    #                 if not self.opt.no_cuda:
-    #                     self.device = 'cuda:' + str(self.opt.gpu_ids[0]) if not self.opt.no_cuda else 'cpu'
-    #                     inputs = inputs.to(self.device)
-    #                 outputs, loss_data, _ = self.__step(False, inputs, inputs)
-    #                 scio.savemat(fname + 'Res.mat', {'output': outputs.cpu().detach().numpy()})
-    # def test_real(self, test_loader,block,batch_size, savedir=None):
-    #     self.net.eval()
-    #     # print(torch.cuda.device_count())
-    #     #torch.cuda.empty_cache()
-    #     with torch.no_grad():
-    #         with torch.cuda.device(self.opt.gpu_ids[0]):
-    #             for batch_idx, (inputs, fname) in enumerate(tqdm(test_loader, disable=True)):
-    #                 fname = fname[0]
-    #                 print('\n[i] Eval dataset {}...'.format(fname))
-    #                 bands = inputs.shape[1]
-    #                 print(bands)
-    #                 if not self.opt.no_cuda:
-    #                     self.device = 'cuda:' + str(self.opt.gpu_ids[0]) if not self.opt.no_cuda else 'cpu'
-    #                     inputs = inputs.to(self.device)
-    #                 if bands <= 31:
-    #                     batch_noisy_blocks = block._make_blocks(inputs)
-    #                     patch_loader = torch.utils.data.DataLoader(batch_noisy_blocks, batch_size=batch_size,
-    #                                                                drop_last=False)
-    #                     batch_out_blocks = torch.zeros_like(batch_noisy_blocks)
-    #                     for i, inp in enumerate(patch_loader):  # if it doesnt fit in memory
-    #                         id_from, id_to = i * patch_loader.batch_size, (i + 1) * patch_loader.batch_size
-    #                         batch_out_blocks[id_from:id_to], _ = self.net(inp)
-    #                     outputs = block._agregate_blocks(batch_out_blocks)
-    #                     scio.savemat(fname + 'Res.mat', {'output': outputs.cpu().detach().numpy()})
-    #                 else:
-    #                     num = bands // 31
-    #                     output_hsi=torch.zeros_like(inputs)
-    #                     for i in range(num + 1):
-    #                         start_band = 31 * i
-    #                         end_band = 31 * (i + 1)
-    #                         if end_band > bands:
-    #                             end_band = bands;
-    #                             start_band = bands - 31;
-    #                         split_batch = inputs[:, start_band:end_band, :, :];
-    #                         batch_noisy_blocks = block._make_blocks(split_batch)
-    #                         patch_loader = torch.utils.data.DataLoader(batch_noisy_blocks, batch_size=batch_size,
-    #                                                                    drop_last=False)
-    #                         batch_out_blocks = torch.zeros_like(batch_noisy_blocks)
-    #                         for i, inp in enumerate(patch_loader):  # if it doesnt fit in memory
-    #                             id_from, id_to = i * patch_loader.batch_size, (i + 1) * patch_loader.batch_size
-    #                             batch_out_blocks[id_from:id_to], _ = self.net(inp)
-    #                         outputs = block._agregate_blocks(batch_out_blocks)
-    #                         output_hsi[:, start_band:end_band, :, :] = outputs
-    #                     scio.savemat(fname + 'Res.mat', {'output': output_hsi.cpu().detach().numpy()})
-
-    # def test_real(self, inputs, block, batch_size, savedir=None):
-    #     self.net.eval()
-    #     # print(torch.cuda.device_count())
-    #     # torch.cuda.empty_cache()
-    #     with torch.no_grad():
-    #         self.device = 'cuda:' + str(self.opt.gpu_ids[0]) if not self.opt.no_cuda else 'cpu'
-    #         inputs = inputs.to(self.device)
-    #         batch_noisy_blocks = block._make_blocks(inputs)
-    #         patch_loader = torch.utils.data.DataLoader(batch_noisy_blocks, batch_size=batch_size,
-    #                                                    drop_last=False)
-    #         batch_out_blocks = torch.zeros_like(batch_noisy_blocks)
-    #         for i, inp in enumerate(patch_loader):  # if it doesnt fit in memory
-    #             id_from, id_to = i * patch_loader.batch_size, (i + 1) * patch_loader.batch_size
-    #             batch_out_blocks[id_from:id_to], _ = self.net(inp)
-    #         outputs = block._agregate_blocks(batch_out_blocks)
-    #     return outputs
-
     def test_real(self, inputs, block, batch_size, savedir=None):
         self.net.eval()
         # print(torch.cuda.device_count())
@@ -844,53 +557,6 @@ class Engine(object):
             # scio.savemat('AnaRes.mat', {'share': share.cpu().detach().numpy(),'unique': unique.cpu().detach().numpy(),'avg': avg.cpu().detach().numpy(),'output': outputs.cpu().detach().numpy()})
         return outputs
 
-
-    # with torch.no_grad():
-    #     with torch.cuda.device(self.opt.gpu_ids[0]):
-    #         for batch_idx, (inputs, fname) in enumerate(tqdm(valid_loader, disable=True)):
-    #             fname = fname[0]
-    #             targets = dataloaders_hsi_test.get_gt(self.opt.gtroot, fname)
-    #             # inputs=inputs
-    #             if not self.opt.no_cuda:
-    #                 self.device = 'cuda:' + str(self.opt.gpu_ids[0]) if not self.opt.no_cuda else 'cpu'
-    #                 inputs, targets = inputs.to(self.device), targets.to(self.device)
-    #                 # print(inputs.shape)
-    #             batch_noisy_blocks = block._make_blocks(inputs)
-    #             patch_loader = torch.utils.data.DataLoader(batch_noisy_blocks, batch_size=batch_size,
-    #                                                        drop_last=False)
-    #             batch_out_blocks = torch.zeros_like(batch_noisy_blocks)
-    #             for i, inp in enumerate(patch_loader):  # if it doesnt fit in memory
-    #                 id_from, id_to = i * patch_loader.batch_size, (i + 1) * patch_loader.batch_size
-    #                 batch_out_blocks[id_from:id_to], _ = self.net(inp)
-    #             outputs = block._agregate_blocks(batch_out_blocks)
-    #             # print(outputs.shape)
-    #             targets = targets.unsqueeze(0).unsqueeze(0)
-    #             # print(targets.shape)
-    #             psnr = np.mean(cal_bwpsnr(outputs, targets))
-    #             # ssim = np.mean(cal_bwssim(outputs, targets))
-    #             # sam = cal_sam(outputs, targets)
-    #             # print(outputs.shape)
-    #             res_arr[batch_idx, :] = MSIQA(outputs, targets)
-    #             avg_loss = validate_loss / (batch_idx + 1)
-    #             # total_ssim +=ssim
-    #             # total_sam  +=sam
-    #             total_psnr += psnr
-    #             avg_psnr = total_psnr / (batch_idx + 1)
-    #             # avg_ssim =total_ssim/(batch_idx+1)
-    #             avg_sam = total_sam / (batch_idx + 1)
-    #             # progress_bar(batch_idx, len(valid_loader), 'Loss: %.4e | PSNR: %.4f | SSIM: %.4f |SAM: %.4f'
-    #             #                           % (avg_loss, avg_psnr, avg_ssim, avg_sam))
-    #             progress_bar(batch_idx, len(valid_loader), '| PSNR: %.4f'
-    #                          % (avg_psnr))
-    #         # if batch_idx == 10:###modified###
-    #         #    break###modified###
-    # if not self.opt.no_log:
-    #     self.writer.add_scalar(
-    #         join(self.prefix, name, 'val_loss_epoch'), avg_loss, self.epoch)
-    #     self.writer.add_scalar(
-    #         join(self.prefix, name, 'val_psnr_epoch'), avg_psnr, self.epoch)
-
-    # return avg_psnr, avg_loss, res_arr
     def get_net(self):
         if len(self.opt.gpu_ids) > 1:
             return self.net.module

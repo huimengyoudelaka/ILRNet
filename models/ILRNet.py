@@ -12,123 +12,26 @@ class ILRNet(nn.Module):
         super(ILRNet, self).__init__()
         self.init=Unet(kernel_size=3, out_channel=params.out_channel,
                          layer=params.out_num)
-        # self.layerNorm = LayerNorm3D()
         self.refs=nn.ModuleList()
-        # self.w=nn.ModuleList()
         for i in range(params.unfoldings):
             self.refs.append(Unet(kernel_size=3, out_channel=params.grow,
                          layer=params.grow_num))
-        # self.refs.append(Unet(kernel_size=3, out_channel=params.grow,
-        #                   layer=params.grow_num))
         self.unfoldings = params.unfoldings
-        # self.ref = Unet(kernel_size=3, out_channel=params.grow, layer=params.grow_num)
         self.w1=(WeighEstimator())
         self.w2=(WeighEstimator())
-        # self.filter = Unet(kernel_size=3, out_channel=params.out_channel,
-        #                  layer=params.out_num)
-        # self.filter =FFTfilter()
-        # self.w=(WeighEstimator())
-        # self.w=(SELayer())
-        # self.w1 = torch.nn.Parameter(torch.tensor([[0.5 for i in range(31)] for i in range(params.unfoldings)]))
-        # self.w2 = torch.nn.Parameter(torch.tensor([[0.5 for i in range(31)] for i in range(params.unfoldings)]))
-        # self.w = torch.nn.Parameter(torch.tensor([0.5 for i in range(params.unfoldings)]))
     def forward(self, I):
-        # temp = I.clone().detach().requires_grad_(True)
         X =self.init(I) ### initial
-        # X = self.layerNorm(X)
-        # X = norm(X)
-        # I_f = X
-        # resTemp = self.init(temp)
         res=[]
-        # f_ = []
-        # temp_X_ = []
-        # supervision = []
-        # res.append(X)
-        # supervision.append(resTemp)
-        # supervision.append(X)
         ind=0
-        # res.append(X)
-
-        # I_f = self.filter(I)
-        # res.append(I_f)
         tempW1 = []
         tempW2 = []
-        # return [X]
         for index,ref in enumerate(self.refs):
-        # ref = self.refs[0]
-        # for index in range(self.unfoldings):
-            # weight=self.w[index]
-            # weight=self.w(X,index+1)
-            # weight=self.w(X-I)
-            # weight=self.w1(X)
-            # weight=self.w1(I-X)
             weight=self.w1(torch.cat([X,I],dim=1))
-            # weight=self.w1(X,I)
-            # weight=self.w1[index].view(1,1,31,1,1)
-            # weight = (index+1)/(index+2)
-            # weight=0.5
-            # weight=self.w(X)
-            # print(index,weight)
-            # tempW1.append(torch.squeeze(weight).unsqueeze(0))
-            # temp_X = I_f*(1-weight)+weight*X
             temp_X = I*(1-weight)+weight*X
-            # temp_X_.append(temp_X)
-            # weight=self.w2(temp_X)
-            # weight=self.w2[index].view(1,1,31,1,1)
-            # weight=0.5
             refined_X = ref(temp_X)
-            # weight=self.w2(torch.cat([X,refined_X],dim=1))
             weight=self.w2(torch.cat([X,temp_X],dim=1))
-            # weight=self.w(temp_X)
-            # weight=self.w(X)
-            # weight=self.w(X,I)
-            # weight=self.w(torch.cat([X,I],dim = 1))
-            # weight=self.w[index,:,None,None]
-            # temp = X.clone().detach().requires_grad_(True)
-            # print(index,':',weight)
-            # tempW.append(torch.squeeze(weight).cpu().numpy())
-            # tempW2.append(torch.squeeze(weight).unsqueeze(0))
-            # X=weight*X+(1-weight)*ref(I*(1-weight)+weight*X)
-            # f_.append(f)
             X=weight*X+(1-weight)*refined_X
-            # X=ref(X)
-            # if index < 4:
-            #     X = norm(X)
-            # if index==1:
-            #     return [X]
-            # res.append(X)
-            # X=weight*X+(1-weight)*ref(X)
-            # X=ref(I*(1-weight)+weight*X)
-            # resTemp=weight*temp+(1-weight)*ref(I*(1-weight)+weight*temp)
-            # res.append(X)
-            # supervision.append(resTemp)
-            # if(index==4 or index==2):
-                # supervision.append(X)
-        # lamdas1 = torch.concat(tempW1,dim=0)
-        # lamdas2 = torch.concat(tempW2,dim=0)
-        # np.savetxt("tempW7.csv",tempW) 
-        # print('1')
-        # supervision.append(X)
-        # for i in range(self.unfoldings):
-        #     # weight=self.w[ind]
-        #     weight=self.w(X-I)
-        #     # print(i,",w:",weight)
-        #     # temp = X.clone().detach().requires_grad_(True)
-        #     X=weight*X+(1-weight)*self.ref(I*(1-weight)+weight*X)
-        #     # resTemp=weight*temp+(1-weight)*ref(I*(1-weight)+weight*temp)
-        #     # res.append(X)
-        #     # supervision.append(resTemp)
-        #     # supervision.append(X)
-        # supervision.append(X)
-        # print('len:',len(supervision))
-        # res.append(X)
-        # return res, lamdas1.cpu()
-        # return res, lamdas1.cpu(), lamdas2.cpu(), f_, temp_X_
-        # return res, lamdas2.cpu()
-        # return X, lamdas.cpu()
-        # return X
         res.append(X)
-        # return res, lamdas1.cpu(), lamdas2.cpu()
         return res
 
 class SELayer(nn.Module):
