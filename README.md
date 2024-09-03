@@ -47,9 +47,12 @@ If you find the code helpful in your resarch or work, please cite the following 
 @ARTICLE{10645292,
   author={Ye, Jin and Xiong, Fengchao and Zhou, Jun and Qian, Yuntao},
   journal={IEEE Transactions on Geoscience and Remote Sensing}, 
-  title={Iterative Low-rank Network for Hyperspectral Image Denoising}, 
+  title={Iterative Low-Rank Network for Hyperspectral Image Denoising}, 
   year={2024},
+  volume={62},
+  pages={1-15},
   doi={10.1109/TGRS.2024.3449130}
 }
+
 
 ```
