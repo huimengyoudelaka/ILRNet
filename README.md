@@ -38,6 +38,30 @@ We provide the [checkpoints](https://drive.google.com/drive/folders/1KN1Ggi0WkMi
 | [DPNet-S](https://ieeexplore.ieee.org/abstract/document/10258356) | 45.76 | 39.37 | 39.28 | 34.60 | 39.14 |
 | [ILRNet](https://ieeexplore.ieee.org/document/10645292)  | **47.45** | **41.52** | **41.80** | **36.17** | **41.41** |
 
+### Visual Comparison on EO1
+<table border="0" cellpadding="5" cellspacing="0" style="table-layout: fixed; width: 100%;">
+  <tr>
+    <td align="center" style="width: 16.66%; vertical-align: top;">
+      <img src="figs/results/t3sc_Result-eps-converted-to-1.png" style="width: 100%; height: auto;"><br>T3SC
+    </td>
+    <td align="center" style="width: 16.66%; vertical-align: top;">
+      <img src="figs/results/macnet_Result-eps-converted-to-1.png" style="width: 100%; height: auto;"><br>MACNet
+    </td>
+    <td align="center" style="width: 16.66%; vertical-align: top;">
+      <img src="figs/results/trq3d_Result-eps-converted-to-1.png" style="width: 100%; height: auto;"><br>TRQ3D
+    </td>
+    <td align="center" style="width: 16.66%; vertical-align: top;">
+      <img src="figs/results/sst_Result-eps-converted-to-1.png" style="width: 100%; height: auto;"><br>SST
+    </td>
+    <td align="center" style="width: 16.66%; vertical-align: top;">
+      <img src="figs/results/dpnet_Result-eps-converted-to-1.png" style="width: 100%; height: auto;"><br>DPNet-S
+    </td>
+    <td align="center" style="width: 16.66%; vertical-align: top;">
+      <img src="figs/results/ilrnet_Result-eps-converted-to-1.png" style="width: 100%; height: auto;"><br>ILRNet
+    </td>
+  </tr>
+</table>
+
 
 ## Citations
 
